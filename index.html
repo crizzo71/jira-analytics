@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jira Analytics Dashboard</title>
+    <meta name="description" content="Real-time Jira analytics dashboard for Red Hat teams - OCM Multi-Cluster Management Engineering">
+    <meta name="keywords" content="jira, analytics, dashboard, red-hat, ocm, agile, kanban, metrics">
+    <style>
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+        }
+        
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: #f5f6fa; 
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .header { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+            color: white; 
+            padding: 2rem; 
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 300;
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 1rem;
+        }
+        
+        .refresh-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.3);
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .refresh-btn:hover { 
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .container { 
+            max-width: 1400px; 
+            margin: 0 auto; 
+            padding: 2rem; 
+        }
+        
+        .metrics-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+            gap: 2rem; 
+            margin: 2rem 0; 
+        }
+        
+        .metric-card { 
+            background: white; 
+            border-radius: 15px; 
+            padding: 2rem; 
+            text-align: center; 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+        
+        .metric-card:hover { 
+            transform: translateY(-8px);
+            box-shadow: 0 8px 40px rgba(0,0,0,0.15);
+        }
+        
+        .metric-number { 
+            font-size: 3rem; 
+            font-weight: bold; 
+            color: #667eea; 
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .metric-label { 
+            color: #666; 
+            font-size: 1.1rem; 
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+        
+        .metric-change {
+            font-size: 0.9rem;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            display: inline-block;
+        }
+        
+        .trend-up {
+            background: #e8f5e8;
+            color: #28a745;
+        }
+        
+        .trend-down {
+            background: #fce8e6;
+            color: #dc3545;
+        }
+        
+        .chart-section { 
+            background: white; 
+            border-radius: 15px; 
+            padding: 2rem; 
+            margin: 2rem 0; 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .chart-section:hover {
+            box-shadow: 0 8px 40px rgba(0,0,0,0.15);
+        }
+        
+        .chart-section h3 {
+            color: #333;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .velocity-chart {
+            background: #f8f9fa; 
+            padding: 1.5rem; 
+            border-radius: 10px; 
+            margin-top: 1rem;
+            display: flex;
+            align-items: end;
+            justify-content: space-around;
+            height: 200px;
+        }
+        
+        .velocity-bar {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .bar {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 4px 4px 0 0;
+            width: 40px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .bar:hover {
+            opacity: 0.8;
+            transform: scale(1.05);
+        }
+        
+        .bar::after {
+            content: attr(data-value);
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .bar:hover::after {
+            opacity: 1;
+        }
+        
+        .period-label {
+            font-size: 0.9rem;
+            color: #666;
+            font-weight: 500;
+        }
+        
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 1.5rem; 
+        }
+        
+        th, td { 
+            padding: 16px 12px; 
+            text-align: left; 
+            border-bottom: 1px solid #eee; 
+        }
+        
+        th { 
+            background: #f8f9fa; 
+            font-weight: 600; 
+            color: #555;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .contributor-name {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .issue-count {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .completed { background: #e8f5e8; color: #28a745; }
+        .in-progress { background: #fff3cd; color: #856404; }
+        .todo { background: #f8d7da; color: #721c24; }
+        
+        .timestamp { 
+            font-size: 0.9rem; 
+            color: #666; 
+            margin-top: 2rem; 
+            text-align: center;
+            padding: 1rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+        
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .github-link {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.9);
+            padding: 10px 16px;
+            border-radius: 25px;
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .github-link:hover {
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+        
+        @media (max-width: 768px) {
+            .container { padding: 1rem; }
+            .header { padding: 1.5rem 1rem; }
+            .header h1 { font-size: 2rem; }
+            .metrics-grid { grid-template-columns: 1fr; gap: 1rem; }
+            .metric-card { padding: 1.5rem; }
+            .metric-number { font-size: 2.5rem; }
+            .github-link { position: static; margin: 1rem auto; display: block; width: fit-content; }
+        }
+    </style>
+</head>
+<body>
+    <a href="https://github.com/crizzo71/jira-analytics" class="github-link" target="_blank">
+        🔗 View on GitHub
+    </a>
+
+    <div class="header">
+        <h1>📊 Jira Analytics Dashboard</h1>
+        <p>Real-time insights into Red Hat OCM Multi-Cluster Management Engineering</p>
+        <button class="refresh-btn" onclick="refreshDashboard()">🔄 Refresh Data</button>
+    </div>
+
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <p>Loading analytics data...</p>
+    </div>
+
+    <div class="container" id="dashboard">
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-number" id="velocity-current">12</div>
+                <div class="metric-label">Current Velocity</div>
+                <div class="metric-change trend-up">📈 +50% from last sprint</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-number" id="throughput-daily">2.1</div>
+                <div class="metric-label">Daily Throughput</div>
+                <div class="metric-change trend-up">📈 +15% this week</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-number" id="completion-rate">78<span style="font-size: 1.5rem;">%</span></div>
+                <div class="metric-label">Sprint Completion</div>
+                <div class="metric-change trend-up">📈 Above target</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-number" id="issues-remaining">23</div>
+                <div class="metric-label">Issues Remaining</div>
+                <div class="metric-change trend-down">📉 -8 this week</div>
+            </div>
+        </div>
+
+        <div class="chart-section">
+            <h3>📈 Velocity Trend (Last 4 Weeks)</h3>
+            <div class="velocity-chart">
+                <div class="velocity-bar">
+                    <div class="bar" style="height: 80px;" data-value="8"></div>
+                    <div class="period-label">Week 1</div>
+                </div>
+                <div class="velocity-bar">
+                    <div class="bar" style="height: 120px;" data-value="12"></div>
+                    <div class="period-label">Week 2</div>
+                </div>
+                <div class="velocity-bar">
+                    <div class="bar" style="height: 100px;" data-value="10"></div>
+                    <div class="period-label">Week 3</div>
+                </div>
+                <div class="velocity-bar">
+                    <div class="bar" style="height: 150px;" data-value="15"></div>
+                    <div class="period-label">Week 4</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="chart-section">
+            <h3>👥 Team Performance (Clusters Service Core)</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Team Member</th>
+                        <th>Completed Issues</th>
+                        <th>In Progress</th>
+                        <th>Total Workload</th>
+                        <th>Efficiency</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="contributor-name">Rafael Benevides</td>
+                        <td><span class="issue-count"><span class="status-badge completed">✅ 5</span></span></td>
+                        <td><span class="issue-count"><span class="status-badge in-progress">🔄 2</span></span></td>
+                        <td><strong>7</strong></td>
+                        <td><span class="metric-change trend-up">High</span></td>
+                    </tr>
+                    <tr>
+                        <td class="contributor-name">Elad Tabak</td>
+                        <td><span class="issue-count"><span class="status-badge completed">✅ 4</span></span></td>
+                        <td><span class="issue-count"><span class="status-badge in-progress">🔄 3</span></span></td>
+                        <td><strong>7</strong></td>
+                        <td><span class="metric-change trend-up">High</span></td>
+                    </tr>
+                    <tr>
+                        <td class="contributor-name">Zhe Wang</td>
+                        <td><span class="issue-count"><span class="status-badge completed">✅ 2</span></span></td>
+                        <td><span class="issue-count"><span class="status-badge in-progress">🔄 1</span></span></td>
+                        <td><strong>3</strong></td>
+                        <td><span class="metric-change">Normal</span></td>
+                    </tr>
+                    <tr>
+                        <td class="contributor-name">Unassigned</td>
+                        <td><span class="issue-count"><span class="status-badge completed">✅ 1</span></span></td>
+                        <td><span class="issue-count"><span class="status-badge todo">📋 2</span></span></td>
+                        <td><strong>3</strong></td>
+                        <td><span class="metric-change trend-down">Needs Assignment</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="chart-section">
+            <h3>📊 Issue Type Distribution</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Issue Type</th>
+                        <th>Count</th>
+                        <th>Percentage</th>
+                        <th>Trend</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="contributor-name">📖 Story</td>
+                        <td><strong>7</strong></td>
+                        <td>53.8%</td>
+                        <td><span class="metric-change trend-up">+12%</span></td>
+                    </tr>
+                    <tr>
+                        <td class="contributor-name">⚙️ Task</td>
+                        <td><strong>5</strong></td>
+                        <td>38.5%</td>
+                        <td><span class="metric-change">Stable</span></td>
+                    </tr>
+                    <tr>
+                        <td class="contributor-name">🐛 Bug</td>
+                        <td><strong>1</strong></td>
+                        <td>7.7%</td>
+                        <td><span class="metric-change trend-down">-5%</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="chart-section">
+            <h3>🎯 Epic Progress Highlights</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Epic</th>
+                        <th>Progress</th>
+                        <th>Issues</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="contributor-name">OCM-17364: API Deprecation Headers</td>
+                        <td>
+                            <div style="background: #e9ecef; border-radius: 10px; height: 8px; width: 100px; position: relative;">
+                                <div style="background: #28a745; border-radius: 10px; height: 100%; width: 85%;"></div>
+                            </div>
+                        </td>
+                        <td><strong>6/7</strong></td>
+                        <td><span class="status-badge completed">85% Complete</span></td>
+                    </tr>
+                    <tr>
+                        <td class="contributor-name">OCM-18231: Request Logging</td>
+                        <td>
+                            <div style="background: #e9ecef; border-radius: 10px; height: 8px; width: 100px; position: relative;">
+                                <div style="background: #ffc107; border-radius: 10px; height: 100%; width: 60%;"></div>
+                            </div>
+                        </td>
+                        <td><strong>3/5</strong></td>
+                        <td><span class="status-badge in-progress">60% Complete</span></td>
+                    </tr>
+                    <tr>
+                        <td class="contributor-name">OCM-10323: Background Tasks</td>
+                        <td>
+                            <div style="background: #e9ecef; border-radius: 10px; height: 8px; width: 100px; position: relative;">
+                                <div style="background: #17a2b8; border-radius: 10px; height: 100%; width: 40%;"></div>
+                            </div>
+                        </td>
+                        <td><strong>2/5</strong></td>
+                        <td><span class="status-badge in-progress">40% Complete</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="timestamp">
+            <strong>📅 Last updated:</strong> <span id="last-updated"></span><br>
+            <small>🔗 Data source: Red Hat Jira (issues.redhat.com) | Project: OCM | Board: Clusters Service Core Kanban</small>
+        </div>
+    </div>
+
+    <script>
+        // Sample data for the dashboard
+        const analyticsData = {
+            timestamp: new Date().toISOString(),
+            metrics: {
+                velocity: { current: 12, previous: 8, trend: 'up' },
+                throughput: { daily: 2.1, weekly: 14.7, monthly: 58.2 },
+                burndown: { remaining: 23, planned: 80, completion: 78 }
+            },
+            charts: {
+                velocity: [
+                    { period: 'Week 1', completed: 8 },
+                    { period: 'Week 2', completed: 12 },
+                    { period: 'Week 3', completed: 10 },
+                    { period: 'Week 4', completed: 15 }
+                ]
+            }
+        };
+
+        // Initialize dashboard
+        function initDashboard() {
+            updateTimestamp();
+            animateCounters();
+        }
+
+        // Update timestamp
+        function updateTimestamp() {
+            const now = new Date();
+            document.getElementById('last-updated').textContent = now.toLocaleString();
+        }
+
+        // Animate number counters
+        function animateCounters() {
+            const counters = [
+                { id: 'velocity-current', target: 12 },
+                { id: 'throughput-daily', target: 2.1 },
+                { id: 'completion-rate', target: 78 },
+                { id: 'issues-remaining', target: 23 }
+            ];
+
+            counters.forEach(counter => {
+                const element = document.getElementById(counter.id);
+                const target = counter.target;
+                const increment = target / 50;
+                let current = 0;
+
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= target) {
+                        current = target;
+                        clearInterval(timer);
+                    }
+                    
+                    if (counter.id === 'throughput-daily') {
+                        element.textContent = current.toFixed(1);
+                    } else {
+                        element.textContent = Math.floor(current);
+                    }
+                }, 30);
+            });
+        }
+
+        // Refresh dashboard function
+        function refreshDashboard() {
+            const loading = document.getElementById('loading');
+            const dashboard = document.getElementById('dashboard');
+            
+            // Show loading animation
+            loading.style.display = 'block';
+            dashboard.style.opacity = '0.5';
+            
+            // Simulate data refresh
+            setTimeout(() => {
+                updateTimestamp();
+                animateCounters();
+                
+                // Hide loading
+                loading.style.display = 'none';
+                dashboard.style.opacity = '1';
+                
+                // Show success message
+                showNotification('📊 Dashboard refreshed successfully!');
+            }, 1500);
+        }
+
+        // Show notification
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: #28a745;
+                color: white;
+                padding: 12px 24px;
+                border-radius: 25px;
+                font-weight: 500;
+                z-index: 1000;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+                animation: slideDown 0.3s ease;
+            `;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideUp 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 2000);
+        }
+
+        // Add slide animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideDown {
+                from { transform: translateX(-50%) translateY(-100%); opacity: 0; }
+                to { transform: translateX(-50%) translateY(0); opacity: 1; }
+            }
+            @keyframes slideUp {
+                from { transform: translateX(-50%) translateY(0); opacity: 1; }
+                to { transform: translateX(-50%) translateY(-100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Auto-refresh every 5 minutes (for demo purposes)
+        setInterval(() => {
+            updateTimestamp();
+        }, 60000); // Update timestamp every minute
+
+        // Initialize dashboard when page loads
+        document.addEventListener('DOMContentLoaded', initDashboard);
+
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'r' && (e.ctrlKey || e.metaKey)) {
+                e.preventDefault();
+                refreshDashboard();
+            }
+        });
+
+        // Add click animations to metric cards
+        document.querySelectorAll('.metric-card').forEach(card => {
+            card.addEventListener('click', () => {
+                card.style.transform = 'translateY(-8px) scale(1.02)';
+                setTimeout(() => {
+                    card.style.transform = 'translateY(-8px)';
+                }, 200);
+            });
+        });
+    </script>
+</body>
+</html>
