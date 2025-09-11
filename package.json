@@ -1,0 +1,77 @@
+{
+  "name": "jira-analytics-dashboard",
+  "version": "1.0.0",
+  "description": "Advanced Jira analytics dashboard with real-time metrics, data visualization, and enhanced reporting capabilities - separated from core Jira Status Builder",
+  "main": "enhanced-cli.js",
+  "homepage": "https://github.com/crizzo71/jira-analytics-dashboard",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/crizzo71/jira-analytics-dashboard.git"
+  },
+  "bugs": {
+    "url": "https://github.com/crizzo71/jira-analytics-dashboard/issues"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "concurrently \"npm run server\" \"npm run ui\"",
+    "server": "node server.js",
+    "simple-server": "node simple-server.js",
+    "ui": "cd ui && npm run dev",
+    "build": "cd ui && npm run build",
+    "enhanced": "node enhanced-cli.js",
+    "enhanced:security": "node enhanced-cli.js security",
+    "enhanced:assign": "node enhanced-cli.js assign",
+    "enhanced:export": "node enhanced-cli.js export",
+    "enhanced:query": "node enhanced-cli.js query",
+    "dashboard": "node simple-dashboard-server.js",
+    "dashboard:generate": "node dashboard-generator.js",
+    "dashboard:cli": "node dashboard-cli.js",
+    "dashboard:html": "node dashboard-cli.js generate --format=html",
+    "dashboard:markdown": "node dashboard-cli.js generate --format=markdown",
+    "dashboard:csv": "node dashboard-cli.js generate --format=csv",
+    "dashboard:all": "node dashboard-cli.js generate --format=all",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "jira",
+    "analytics", 
+    "dashboard",
+    "metrics",
+    "data-visualization",
+    "real-time",
+    "reporting",
+    "red-hat",
+    "agile",
+    "kanban",
+    "scrum",
+    "velocity",
+    "team-metrics",
+    "board-analytics",
+    "jira-api",
+    "open-cluster-management"
+  ],
+  "author": "Christina Rizzo <christina.rizzo@redhat.com>",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  },
+  "dependencies": {
+    "dotenv": "^16.3.0",
+    "handlebars": "^4.7.8",
+    "express": "^4.18.2",
+    "socket.io": "^4.7.2",
+    "cors": "^2.8.5",
+    "concurrently": "^8.2.0"
+  },
+  "devDependencies": {},
+  "peerDependencies": {},
+  "files": [
+    "*.js",
+    "ui/",
+    "templates/",
+    "README.md",
+    ".env.example"
+  ]
+}
