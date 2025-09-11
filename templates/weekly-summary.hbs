@@ -1,0 +1,184 @@
+# Weekly Team Report: {{dateRange}}
+
+**Prepared For:** Executive Leadership  
+**Prepared By:** Multi-Cluster Management Engineering Team  
+**Team:** {{teamName}}  
+**Report Date:** {{generatedOn}}
+
+---
+
+## 1.0 Team Performance Metrics
+
+### 1.1 Team Velocity
+
+**Average Velocity:** {{velocity.average}} {{velocity.unit}}  
+**Velocity Trend:** {{velocity.trend}}  
+
+{{#if velocity.data}}
+**Recent Performance:**
+{{#each velocity.data}}
+- **{{this.period}}**: {{this.value}} {{../velocity.unit}}
+{{/each}}
+{{/if}}
+
+**Highlights:** {{#if manualInput.velocityHighlights.trends}}{{manualInput.velocityHighlights.trends}}{{else}}_No specific trends noted._{{/if}}
+
+{{#if manualInput.velocityHighlights.anomalies}}
+**Context:** {{manualInput.velocityHighlights.anomalies}}
+{{/if}}
+
+### 1.2 Key Epic-Level Accomplishments
+
+**Completed Epics and Major Initiatives:**
+{{#each completed}}
+- **[{{this.key}}]({{this.url}})** - {{this.summary}}
+  - Type: {{this.issuetype}} | Priority: {{this.priority}}
+  - Assignee: {{#if this.assignee}}{{this.assignee}}{{else}}Unassigned{{/if}}
+  {{#if this.epic}}- Epic: **[{{this.epic.key}}]({{this.epic.url}})** - {{this.epic.summary}}{{#if this.epic.progress}} ({{this.epic.progress.percentage}}% complete - {{this.epic.progress.completed}}/{{this.epic.progress.total}} issues){{/if}}{{/if}}
+  {{#if this.parent}}- Parent: **[{{this.parent.key}}]({{this.parent.url}})** - {{this.parent.summary}}{{/if}}
+{{/each}}
+
+{{#unless completed.length}}
+_No Epic-level work items were completed during this period._
+{{/unless}}
+
+**Milestones Reached:**
+{{#if manualInput.milestones.milestonesReached}}
+{{manualInput.milestones.milestonesReached}}
+{{else}}
+_No major milestones reported._
+{{/if}}
+
+{{#if manualInput.milestones.releases}}
+**Releases/Deliverables:** {{manualInput.milestones.releases}}
+{{/if}}
+
+---
+
+## 2.0 Team Morale and Culture
+
+### 2.1 Associate Morale
+
+{{#if manualInput.teamMorale.assessment}}
+{{manualInput.teamMorale.assessment}}
+{{else}}
+_No morale assessment provided._
+{{/if}}
+
+{{#if manualInput.teamMorale.challenges}}
+**Current Challenges:** {{manualInput.teamMorale.challenges}}
+{{/if}}
+
+{{#if manualInput.teamMorale.supportNeeded}}
+**Support Needed:** {{manualInput.teamMorale.supportNeeded}}
+{{/if}}
+
+### 2.2 Celebrations and Noteworthy Achievements
+
+**Celebrations:**
+{{#if manualInput.celebrations.teamCelebrations}}
+{{manualInput.celebrations.teamCelebrations}}
+{{else}}
+_No team celebrations reported._
+{{/if}}
+
+**Kudos/Shoutouts:**
+{{#if manualInput.celebrations.kudos}}
+{{manualInput.celebrations.kudos}}
+{{else}}
+_No individual recognition reported._
+{{/if}}
+
+{{#if manualInput.celebrations.noteworthy}}
+**Other Achievements:** {{manualInput.celebrations.noteworthy}}
+{{/if}}
+
+---
+
+## 3.0 Roadmap and Forward-Looking Items
+
+### 3.1 Upcoming Epic-Level Priorities
+
+**Epics and Major Initiatives In Progress:**
+{{#each inProgress}}
+- **[{{this.key}}]({{this.url}})** - {{this.summary}}
+  - Status: {{this.status}} | Priority: {{this.priority}}
+  - Assignee: {{#if this.assignee}}{{this.assignee}}{{else}}Unassigned{{/if}}
+  {{#if this.epic}}- Epic: **[{{this.epic.key}}]({{this.epic.url}})** - {{this.epic.summary}}{{#if this.epic.progress}} ({{this.epic.progress.percentage}}% complete - {{this.epic.progress.completed}}/{{this.epic.progress.total}} issues){{/if}}{{/if}}
+  {{#if this.parent}}- Parent: **[{{this.parent.key}}]({{this.parent.url}})** - {{this.parent.summary}}{{/if}}
+{{/each}}
+
+{{#unless inProgress.length}}
+_No Epic-level work currently in progress._
+{{/unless}}
+
+**Next Period Focus:**
+{{#if manualInput.forwardLooking.upcomingPriorities}}
+{{manualInput.forwardLooking.upcomingPriorities}}
+{{else}}
+_No specific priorities identified for next period._
+{{/if}}
+
+**Potential Blockers/Risks:**
+{{#if manualInput.forwardLooking.potentialBlockers}}
+{{manualInput.forwardLooking.potentialBlockers}}
+{{else}}
+_No significant blockers or risks identified._
+{{/if}}
+
+---
+
+## 4.0 Development Activity Trends
+
+### 4.1 Sub-Epic Work Item Analysis
+
+**Summary:** {{subEpicTrends.totalItems}} stories, tasks, and sub-tasks completed or in progress
+
+**Completion Rate:** {{subEpicTrends.completionRate}}% of development items completed this period
+
+**Activity Breakdown:**
+{{#each subEpicTrends.summary.topTypes}}
+- **{{this.type}}**: {{this.total}} items ({{this.completionRate}}% complete)
+{{/each}}
+
+**Current Activity:**
+- **Active Items**: {{subEpicTrends.summary.activeItems}} stories/tasks in progress
+- **New This Week**: {{subEpicTrends.summary.newThisWeek}} new development items
+- **Needs Attention**: {{subEpicTrends.summary.needingAttention}} items requiring review
+
+{{#if subEpicTrends.weeklyMetrics}}
+**Weekly Development Throughput:**
+{{#each subEpicTrends.weeklyMetrics}}
+- **{{this.period}}**: {{this.completed}} items completed
+{{/each}}
+{{/if}}
+
+---
+
+## 5.0 Detailed Metrics
+
+### 5.1 Epic-Level Work Breakdown
+- **Total Issues Reviewed:** {{totalIssues}}
+- **Epic-Level Issues:** {{epicIssues}}
+- **Sub-Epic Development Items:** {{subEpicIssues}}
+- **Completed Epics:** {{completed.length}}
+- **Epics In Progress:** {{inProgress.length}}
+- **Epics Requiring Attention:** {{needsAttention.length}}
+
+### 5.2 Epics Requiring Attention
+{{#each needsAttention}}
+- **[{{this.key}}]({{this.url}})** - {{this.summary}}
+  - Status: {{this.status}}
+  - Last Updated: {{this.lastUpdated}}
+  - Concern: {{this.reason}}
+  {{#if this.epic}}- Epic: **[{{this.epic.key}}]({{this.epic.url}})** - {{this.epic.summary}}{{#if this.epic.progress}} ({{this.epic.progress.percentage}}% complete - {{this.epic.progress.completed}}/{{this.epic.progress.total}} issues){{/if}}{{/if}}
+  {{#if this.parent}}- Parent: **[{{this.parent.key}}]({{this.parent.url}})** - {{this.parent.summary}}{{/if}}
+{{/each}}
+
+{{#unless needsAttention.length}}
+_No issues require special attention at this time._
+{{/unless}}
+
+---
+
+*This report was automatically generated from Jira data and manual team input on {{generatedOn}}*

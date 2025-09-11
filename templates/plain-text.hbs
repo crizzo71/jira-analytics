@@ -1,0 +1,119 @@
+Weekly Team Report: {{dateRange}}
+====================================================
+
+Prepared For: Executive Leadership
+Prepared By: Multi-Cluster Management Engineering Team
+Team: {{teamName}}
+Report Date: {{generatedOn}}
+Total Issues Reviewed: {{totalIssues}}
+
+1.0 TEAM PERFORMANCE METRICS
+============================
+
+1.1 Team Velocity
+-----------------
+Average Velocity: {{velocity.average}} {{velocity.unit}}
+Velocity Trend: {{velocity.trend}}
+
+Recent Performance:
+{{#each velocity.data}}
+- {{this.period}}: {{this.value}} {{../velocity.unit}}
+{{/each}}
+
+{{#if velocity.highlights}}
+Highlights: {{velocity.highlights}}
+{{else}}
+Highlights: No specific trends noted.
+{{/if}}
+
+1.2 Key Activities and Accomplishments
+---------------------------------------
+
+Completed Work:
+{{#each completedIssues}}
+• {{this.key}} - {{this.summary}} ({{this.url}})
+  Type: {{this.issuetype}} | Priority: {{this.priority}}{{#if this.assignee}} | Assignee: {{this.assignee}}{{/if}}
+  {{#if this.epic}}Epic: {{this.epic.key}} - {{this.epic.summary}} ({{this.epic.url}}){{#if this.epic.progress}} [{{this.epic.progress.percentage}}% complete - {{this.epic.progress.completed}}/{{this.epic.progress.total}} issues]{{/if}}{{/if}}
+  {{#if this.parent}}Parent: {{this.parent.key}} - {{this.parent.summary}} ({{this.parent.url}}){{/if}}
+
+{{/each}}
+
+Summary: {{completedIssues.length}} issues completed this period.
+
+2.0 TEAM MORALE AND CULTURE
+============================
+
+2.1 Associate Morale
+--------------------
+{{#if manualInput.morale}}
+{{manualInput.morale}}
+{{else}}
+No morale update provided for this period.
+{{/if}}
+
+2.2 Celebrations and Achievements
+----------------------------------
+{{#if manualInput.celebrations}}
+{{manualInput.celebrations}}
+{{else}}
+No celebrations reported for this period.
+{{/if}}
+
+3.0 ROADMAP AND FORWARD-LOOKING
+================================
+
+3.1 Upcoming Priorities
+------------------------
+
+Current Work in Progress:
+{{#each inProgressIssues}}
+• {{this.key}} - {{this.summary}} ({{this.url}})
+  Type: {{this.issuetype}} | Priority: {{this.priority}}{{#if this.assignee}} | Assignee: {{this.assignee}}{{/if}}
+  {{#if this.epic}}Epic: {{this.epic.key}} - {{this.epic.summary}} ({{this.epic.url}}){{#if this.epic.progress}} [{{this.epic.progress.percentage}}% complete - {{this.epic.progress.completed}}/{{this.epic.progress.total}} issues]{{/if}}{{/if}}
+  {{#if this.parent}}Parent: {{this.parent.key}} - {{this.parent.summary}} ({{this.parent.url}}){{/if}}
+
+{{/each}}
+
+{{#if manualInput.priorities}}
+Strategic Priorities:
+{{manualInput.priorities}}
+{{/if}}
+
+3.2 Potential Blockers
+-----------------------
+{{#if manualInput.blockers}}
+{{manualInput.blockers}}
+{{/if}}
+
+{{#if issuesNeedingAttention}}
+Issues Requiring Attention:
+{{#each issuesNeedingAttention}}
+• {{this.key}} - {{this.summary}} ({{this.url}})
+  Status: {{this.status}} | Last Updated: {{this.updated}}{{#if this.assignee}} | Assignee: {{this.assignee}}{{/if}}
+  {{#if this.epic}}Epic: {{this.epic.key}} - {{this.epic.summary}} ({{this.epic.url}}){{#if this.epic.progress}} [{{this.epic.progress.percentage}}% complete - {{this.epic.progress.completed}}/{{this.epic.progress.total}} issues]{{/if}}{{/if}}
+  {{#if this.parent}}Parent: {{this.parent.key}} - {{this.parent.summary}} ({{this.parent.url}}){{/if}}
+
+{{/each}}
+{{/if}}
+
+4.0 DETAILED METRICS
+=====================
+
+4.1 Work Breakdown
+-------------------
+Completed Issues: {{completedIssues.length}} ({{workBreakdown.completedPercentage}}%)
+In Progress: {{inProgressIssues.length}} ({{workBreakdown.inProgressPercentage}}%)
+Needs Attention: {{issuesNeedingAttention.length}} ({{workBreakdown.attentionPercentage}}%)
+
+{{#if multiBoard}}
+4.2 Board Coverage
+-------------------
+This report aggregates data from {{boards.length}} boards:
+{{#each boards}}
+- {{this.name}} ({{this.type}})
+{{/each}}
+{{/if}}
+
+----------------------------------------------------
+Generated on {{generatedOn}}
+Multi-Cluster Management Engineering Team

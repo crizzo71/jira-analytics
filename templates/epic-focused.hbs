@@ -1,0 +1,237 @@
+# Weekly Team Report: {{dateRange}}
+
+**Prepared For:** Executive Leadership  
+**Prepared By:** Multi-Cluster Management Engineering Team  
+**Team:** {{teamName}}  
+{{#if componentName}}**Component:** {{componentName}}  {{/if}}
+**Report Date:** {{generatedOn}}
+
+---
+
+## 1.0 Epic Progress Overview
+
+### 1.1 Team Velocity
+
+**Average Velocity:** {{velocity.average}} {{velocity.unit}}  
+**Velocity Trend:** {{velocity.trend}}  
+
+{{#if velocity.data}}
+**Recent Performance:**
+{{#each velocity.data}}
+- **{{this.period}}**: {{this.value}} {{../velocity.unit}}
+{{/each}}
+{{/if}}
+
+**Highlights:** {{#if manualInput.velocityHighlights.trends}}{{manualInput.velocityHighlights.trends}}{{else}}_No specific trends noted._{{/if}}
+
+{{#if manualInput.velocityHighlights.anomalies}}
+**Context:** {{manualInput.velocityHighlights.anomalies}}
+{{/if}}
+
+---
+
+{{#if hierarchyMap.hasHierarchy}}
+## 1.5 Strategic Context - Epic Hierarchy Reference
+
+This section shows how the Epics in this report connect to higher-level strategic initiatives and outcomes.
+
+{{#if hierarchyMap.uniqueOutcomes.length}}
+### 1.5.1 Outcomes
+{{#each hierarchyMap.uniqueOutcomes}}
+- **[{{this.key}}]({{this.url}})** - {{this.summary}}
+  - Type: {{this.type}} | Status: {{this.status}}
+{{/each}}
+{{/if}}
+
+{{#if hierarchyMap.uniqueInitiatives.length}}
+### 1.5.2 Initiatives
+{{#each hierarchyMap.uniqueInitiatives}}
+- **[{{this.key}}]({{this.url}})** - {{this.summary}}
+  - Type: {{this.type}} | Status: {{this.status}}
+{{/each}}
+{{/if}}
+
+### 1.5.3 Epic Hierarchy Mapping
+{{#each hierarchyMap.epicHierarchies}}
+**[{{this.epic.key}}]({{this.epic.url}})** - {{this.epic.summary}}
+{{#if this.outcome}}
+  → **Outcome:** [{{this.outcome.key}}]({{this.outcome.url}}) - {{this.outcome.summary}}
+{{/if}}
+{{#if this.initiative}}
+  → **Initiative:** [{{this.initiative.key}}]({{this.initiative.url}}) - {{this.initiative.summary}}
+{{/if}}
+{{#unless this.outcome}}{{#unless this.initiative}}
+  → No higher-level strategic connections found
+{{/unless}}{{/unless}}
+
+{{/each}}
+
+---
+{{/if}}
+
+## 2.0 Epics and Related Work
+
+{{#each epicsWithIssues}}
+### 2.{{@index}}.1 Epic: [{{this.epic.key}}]({{this.epic.url}}) - {{this.epic.summary}}
+
+**Epic Status:** {{this.epic.status}} | **Priority:** {{this.epic.priority}} | **Assignee:** {{#if this.epic.assignee}}{{this.epic.assignee}}{{else}}Unassigned{{/if}}
+
+{{#if this.epic.progress}}
+**Progress:** {{this.epic.progress.percentage}}% complete ({{this.epic.progress.completed}}/{{this.epic.progress.total}} issues)
+```
+Progress: [{{#repeat this.epic.progress.percentage "="}}{{/repeat}}{{#repeat (subtract 100 this.epic.progress.percentage) "-"}}{{/repeat}}] {{this.epic.progress.percentage}}%
+```
+{{else}}
+**Progress:** Unable to calculate progress
+{{/if}}
+
+**Related Issues:**
+{{#each this.relatedIssues}}
+- **[{{this.key}}]({{this.url}})** - {{this.summary}}
+  - Status: {{this.status}} | Priority: {{this.priority}} | Type: {{this.issuetype}}
+  - Assignee: {{#if this.assignee}}{{this.assignee}}{{else}}Unassigned{{/if}}
+  - Updated: {{this.updated}}
+  {{#if this.parent}}- Parent: **[{{this.parent.key}}]({{this.parent.url}})** - {{this.parent.summary}}{{/if}}
+{{/each}}
+
+{{#unless this.relatedIssues.length}}
+_No related issues found for this Epic in the current timeframe._
+{{/unless}}
+
+---
+
+{{/each}}
+
+{{#unless epicsWithIssues.length}}
+## 2.0 Work Items (No Epics Found)
+
+**Issues without Epic Association:**
+{{#each unassociatedIssues}}
+- **[{{this.key}}]({{this.url}})** - {{this.summary}}
+  - Status: {{this.status}} | Priority: {{this.priority}} | Type: {{this.issuetype}}
+  - Assignee: {{#if this.assignee}}{{this.assignee}}{{else}}Unassigned{{/if}}
+  - Updated: {{this.updated}}
+  {{#if this.parent}}- Parent: **[{{this.parent.key}}]({{this.parent.url}})** - {{this.parent.summary}}{{/if}}
+{{/each}}
+
+{{#unless unassociatedIssues.length}}
+_No work items found in the current timeframe._
+{{/unless}}
+
+---
+{{/unless}}
+
+## 3.0 Team Morale and Culture
+
+### 3.1 Associate Morale
+
+{{#if manualInput.teamMorale.assessment}}
+{{manualInput.teamMorale.assessment}}
+{{else}}
+_No morale assessment provided._
+{{/if}}
+
+{{#if manualInput.teamMorale.challenges}}
+**Current Challenges:** {{manualInput.teamMorale.challenges}}
+{{/if}}
+
+{{#if manualInput.teamMorale.supportNeeded}}
+**Support Needed:** {{manualInput.teamMorale.supportNeeded}}
+{{/if}}
+
+### 3.2 Celebrations and Noteworthy Achievements
+
+**Celebrations:**
+{{#if manualInput.celebrations.teamCelebrations}}
+{{manualInput.celebrations.teamCelebrations}}
+{{else}}
+_No team celebrations reported._
+{{/if}}
+
+**Kudos/Shoutouts:**
+{{#if manualInput.celebrations.kudos}}
+{{manualInput.celebrations.kudos}}
+{{else}}
+_No individual recognition reported._
+{{/if}}
+
+{{#if manualInput.celebrations.noteworthy}}
+**Other Achievements:** {{manualInput.celebrations.noteworthy}}
+{{/if}}
+
+---
+
+## 4.0 Forward-Looking Items
+
+### 4.1 Upcoming Priorities
+
+**Next Period Focus:**
+{{#if manualInput.forwardLooking.upcomingPriorities}}
+{{manualInput.forwardLooking.upcomingPriorities}}
+{{else}}
+_No specific priorities identified for next period._
+{{/if}}
+
+**Potential Blockers/Risks:**
+{{#if manualInput.forwardLooking.potentialBlockers}}
+{{manualInput.forwardLooking.potentialBlockers}}
+{{else}}
+_No significant blockers or risks identified._
+{{/if}}
+
+**Milestones Coming Up:**
+{{#if manualInput.milestones.milestonesReached}}
+{{manualInput.milestones.milestonesReached}}
+{{else}}
+_No upcoming milestones identified._
+{{/if}}
+
+---
+
+## 5.0 Attention Items
+
+### 5.1 Issues Requiring Attention
+
+{{#each needsAttention}}
+- **[{{this.key}}]({{this.url}})** - {{this.summary}}
+  - Status: {{this.status}} | Priority: {{this.priority}}
+  - Last Updated: {{this.lastUpdated}}
+  - Concern: {{this.reason}}
+  {{#if this.epic}}- Epic: **[{{this.epic.key}}]({{this.epic.url}})** - {{this.epic.summary}}{{/if}}
+  {{#if this.parent}}- Parent: **[{{this.parent.key}}]({{this.parent.url}})** - {{this.parent.summary}}{{/if}}
+{{/each}}
+
+{{#unless needsAttention.length}}
+_No issues require special attention at this time._
+{{/unless}}
+
+---
+
+## 6.0 Summary Metrics
+
+### 6.1 Work Breakdown
+- **Total Issues Reviewed:** {{totalIssues}}
+- **Epic-Level Issues:** {{epicIssues}}
+- **Sub-Epic Development Items:** {{subEpicIssues}}
+- **Issues by Epic:** {{epicsWithIssues.length}}
+- **Unassociated Issues:** {{unassociatedIssues.length}}
+- **Issues Requiring Attention:** {{needsAttention.length}}
+
+### 6.2 Development Activity Summary
+
+{{#if subEpicTrends}}
+**Sub-Epic Work Analysis:**
+- **Total Development Items:** {{subEpicTrends.totalItems}}
+- **Completion Rate:** {{subEpicTrends.completionRate}}%
+- **Active Items:** {{subEpicTrends.summary.activeItems}}
+- **New This Period:** {{subEpicTrends.summary.newThisWeek}}
+
+**Activity by Type:**
+{{#each subEpicTrends.summary.topTypes}}
+- **{{this.type}}**: {{this.total}} items ({{this.completionRate}}% complete)
+{{/each}}
+{{/if}}
+
+---
+
+*This report was automatically generated from Jira data and manual team input on {{generatedOn}}*

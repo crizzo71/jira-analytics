@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Weekly Team Report: {{dateRange}}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+        }
+        h1 {
+            color: #1a73e8;
+            border-bottom: 2px solid #1a73e8;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #34a853;
+            margin-top: 30px;
+        }
+        h3 {
+            color: #ea4335;
+            margin-top: 25px;
+        }
+        .header-info {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .metric-box {
+            background-color: #e8f0fe;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        .issue-item {
+            background-color: #f8f9fa;
+            padding: 10px;
+            margin: 5px 0;
+            border-left: 4px solid #34a853;
+            border-radius: 4px;
+        }
+        .issue-key {
+            font-weight: bold;
+            color: #1a73e8;
+        }
+        .epic-info {
+            color: #9c27b0;
+            font-size: 0.9em;
+            margin-left: 10px;
+        }
+        .parent-info {
+            color: #ff9800;
+            font-size: 0.9em;
+            margin-left: 10px;
+        }
+        .progress-bar {
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            height: 12px;
+            display: inline-block;
+            width: 60px;
+            margin-left: 5px;
+        }
+        .progress-fill {
+            background-color: #4caf50;
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+        .velocity-data {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 10px 0;
+        }
+        .velocity-item {
+            background-color: #fff;
+            padding: 8px 12px;
+            border: 1px solid #dadce0;
+            border-radius: 4px;
+            min-width: 120px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        th, td {
+            border: 1px solid #dadce0;
+            padding: 8px 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+        .section-summary {
+            background-color: #e8f5e8;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #dadce0;
+            font-style: italic;
+            color: #5f6368;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Weekly Team Report: {{dateRange}}</h1>
+
+<div class="header-info">
+    <strong>Prepared For:</strong> Executive Leadership<br>
+    <strong>Prepared By:</strong> Multi-Cluster Management Engineering Team<br>
+    <strong>Team:</strong> {{teamName}}<br>
+    <strong>Report Date:</strong> {{generatedOn}}<br>
+    <strong>Total Issues Reviewed:</strong> {{totalIssues}}
+</div>
+
+<h2>1.0 Team Performance Metrics</h2>
+
+<h3>1.1 Team Velocity</h3>
+<div class="metric-box">
+    <strong>Average Velocity:</strong> {{velocity.average}} {{velocity.unit}}<br>
+    <strong>Velocity Trend:</strong> {{velocity.trend}}<br>
+    
+    <h4>Recent Performance:</h4>
+    <div class="velocity-data">
+        {{#each velocity.data}}
+        <div class="velocity-item">
+            <strong>{{this.period}}:</strong> {{this.value}} {{../velocity.unit}}
+        </div>
+        {{/each}}
+    </div>
+    
+    {{#if velocity.highlights}}
+    <p><strong>Highlights:</strong> {{velocity.highlights}}</p>
+    {{else}}
+    <p><strong>Highlights:</strong> <em>No specific trends noted.</em></p>
+    {{/if}}
+</div>
+
+<h3>1.2 Key Epic-Level Accomplishments</h3>
+
+{{#if completedIssues}}
+<h4>Completed Epics and Major Initiatives:</h4>
+{{#each completedIssues}}
+<div class="issue-item">
+    <a href="{{this.url}}" class="issue-key">{{this.key}}</a> - {{this.summary}}<br>
+    <small>Type: {{this.issuetype}} | Priority: {{this.priority}}{{#if this.assignee}} | Assignee: {{this.assignee}}{{/if}}</small>
+    {{#if this.epic}}<br><span class="epic-info">Epic: <a href="{{this.epic.url}}">{{this.epic.key}}</a> - {{this.epic.summary}}{{#if this.epic.progress}} <span class="progress-bar"><span class="progress-fill" style="width: {{this.epic.progress.percentage}}%"></span></span> {{this.epic.progress.percentage}}% ({{this.epic.progress.completed}}/{{this.epic.progress.total}}){{/if}}</span>{{/if}}
+    {{#if this.parent}}<br><span class="parent-info">Parent: <a href="{{this.parent.url}}">{{this.parent.key}}</a> - {{this.parent.summary}}</span>{{/if}}
+</div>
+{{/each}}
+{{else}}
+<p><em>No completed work found in this period.</em></p>
+{{/if}}
+
+<div class="section-summary">
+    <strong>Summary:</strong> {{completedIssues.length}} issues completed this period.
+</div>
+
+<h2>2.0 Team Morale and Culture</h2>
+
+<h3>2.1 Associate Morale</h3>
+{{#if manualInput.morale}}
+<p>{{manualInput.morale}}</p>
+{{else}}
+<p><em>No morale update provided for this period.</em></p>
+{{/if}}
+
+<h3>2.2 Celebrations and Achievements</h3>
+{{#if manualInput.celebrations}}
+<p>{{manualInput.celebrations}}</p>
+{{else}}
+<p><em>No celebrations reported for this period.</em></p>
+{{/if}}
+
+<h2>3.0 Development Activity Trends</h2>
+
+<h3>3.1 Sub-Epic Work Item Analysis</h3>
+<div class="metric-box">
+    <strong>Summary:</strong> {{subEpicTrends.totalItems}} stories, tasks, and sub-tasks completed or in progress<br>
+    <strong>Completion Rate:</strong> {{subEpicTrends.completionRate}}% of development items completed this period
+</div>
+
+<h4>Activity Breakdown:</h4>
+<table>
+    <thead>
+        <tr>
+            <th>Issue Type</th>
+            <th>Total Items</th>
+            <th>Completion Rate</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{#each subEpicTrends.summary.topTypes}}
+        <tr>
+            <td>{{this.type}}</td>
+            <td>{{this.total}}</td>
+            <td>{{this.completionRate}}%</td>
+        </tr>
+        {{/each}}
+    </tbody>
+</table>
+
+<h4>Current Activity:</h4>
+<div class="section-summary">
+    <strong>Active Items:</strong> {{subEpicTrends.summary.activeItems}} stories/tasks in progress<br>
+    <strong>New This Week:</strong> {{subEpicTrends.summary.newThisWeek}} new development items<br>
+    <strong>Needs Attention:</strong> {{subEpicTrends.summary.needingAttention}} items requiring review
+</div>
+
+{{#if subEpicTrends.weeklyMetrics}}
+<h4>Weekly Development Throughput:</h4>
+<div class="velocity-data">
+    {{#each subEpicTrends.weeklyMetrics}}
+    <div class="velocity-item">
+        <strong>{{this.period}}:</strong> {{this.completed}} items completed
+    </div>
+    {{/each}}
+</div>
+{{/if}}
+
+<h2>4.0 Roadmap and Forward-Looking</h2>
+
+<h3>4.1 Upcoming Epic-Level Priorities</h3>
+{{#if inProgressIssues}}
+<h4>Epics and Major Initiatives in Progress:</h4>
+{{#each inProgressIssues}}
+<div class="issue-item">
+    <a href="{{this.url}}" class="issue-key">{{this.key}}</a> - {{this.summary}}<br>
+    <small>Type: {{this.issuetype}} | Priority: {{this.priority}}{{#if this.assignee}} | Assignee: {{this.assignee}}{{/if}}</small>
+    {{#if this.epic}}<br><span class="epic-info">Epic: <a href="{{this.epic.url}}">{{this.epic.key}}</a> - {{this.epic.summary}}{{#if this.epic.progress}} <span class="progress-bar"><span class="progress-fill" style="width: {{this.epic.progress.percentage}}%"></span></span> {{this.epic.progress.percentage}}% ({{this.epic.progress.completed}}/{{this.epic.progress.total}}){{/if}}</span>{{/if}}
+    {{#if this.parent}}<br><span class="parent-info">Parent: <a href="{{this.parent.url}}">{{this.parent.key}}</a> - {{this.parent.summary}}</span>{{/if}}
+</div>
+{{/each}}
+{{/if}}
+
+{{#if manualInput.priorities}}
+<h4>Strategic Priorities:</h4>
+<p>{{manualInput.priorities}}</p>
+{{/if}}
+
+<h3>3.2 Potential Blockers</h3>
+{{#if manualInput.blockers}}
+<p>{{manualInput.blockers}}</p>
+{{/if}}
+
+{{#if issuesNeedingAttention}}
+<h4>Issues Requiring Attention:</h4>
+{{#each issuesNeedingAttention}}
+<div class="issue-item">
+    <a href="{{this.url}}" class="issue-key">{{this.key}}</a> - {{this.summary}}<br>
+    <small>Status: {{this.status}} | Last Updated: {{this.updated}}{{#if this.assignee}} | Assignee: {{this.assignee}}{{/if}}</small>
+    {{#if this.epic}}<br><span class="epic-info">Epic: <a href="{{this.epic.url}}">{{this.epic.key}}</a> - {{this.epic.summary}}{{#if this.epic.progress}} <span class="progress-bar"><span class="progress-fill" style="width: {{this.epic.progress.percentage}}%"></span></span> {{this.epic.progress.percentage}}% ({{this.epic.progress.completed}}/{{this.epic.progress.total}}){{/if}}</span>{{/if}}
+    {{#if this.parent}}<br><span class="parent-info">Parent: <a href="{{this.parent.url}}">{{this.parent.key}}</a> - {{this.parent.summary}}</span>{{/if}}
+</div>
+{{/each}}
+{{/if}}
+
+<h2>5.0 Detailed Metrics</h2>
+
+<h3>5.1 Epic-Level Work Breakdown</h3>
+<table>
+    <tr>
+        <th>Category</th>
+        <th>Count</th>
+        <th>Percentage</th>
+    </tr>
+    <tr>
+        <td>Total Issues Reviewed</td>
+        <td>{{totalIssues}}</td>
+        <td>100%</td>
+    </tr>
+    <tr>
+        <td>Epic-Level Issues</td>
+        <td>{{epicIssues}}</td>
+        <td>-</td>
+    </tr>
+    <tr>
+        <td>Sub-Epic Development Items</td>
+        <td>{{subEpicIssues}}</td>
+        <td>-</td>
+    </tr>
+    <tr>
+        <td>Completed Epics</td>
+        <td>{{completedIssues.length}}</td>
+        <td>{{workBreakdown.completedPercentage}}%</td>
+    </tr>
+    <tr>
+        <td>Epics In Progress</td>
+        <td>{{inProgressIssues.length}}</td>
+        <td>{{workBreakdown.inProgressPercentage}}%</td>
+    </tr>
+    <tr>
+        <td>Epics Needing Attention</td>
+        <td>{{issuesNeedingAttention.length}}</td>
+        <td>{{workBreakdown.attentionPercentage}}%</td>
+    </tr>
+</table>
+
+{{#if multiBoard}}
+<h3>4.2 Board Coverage</h3>
+<p>This report aggregates data from <strong>{{boards.length}} boards</strong>:</p>
+<ul>
+{{#each boards}}
+    <li>{{this.name}} ({{this.type}})</li>
+{{/each}}
+</ul>
+{{else}}
+{{#if boardInfo}}
+<h3>4.2 Team Board</h3>
+<p><strong>{{boardInfo}}</strong></p>
+{{/if}}
+{{/if}}
+
+<div class="footer">
+    Generated on {{generatedOn}} | Multi-Cluster Management Engineering Team
+</div>
+
+</body>
+</html>
