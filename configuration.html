@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jira Analytics - Configuration</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: #f5f6fa; 
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container { 
+            max-width: 600px; 
+            background: white; 
+            border-radius: 10px; 
+            padding: 2rem;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+        }
+        .header { text-align: center; margin-bottom: 2rem; }
+        .form-group { margin-bottom: 1.5rem; }
+        label { display: block; margin-bottom: 0.5rem; font-weight: 600; }
+        input, select { 
+            width: 100%; 
+            padding: 12px; 
+            border: 2px solid #e1e5e9; 
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        input:focus, select:focus { 
+            border-color: #667eea; 
+            outline: none; 
+        }
+        .btn { 
+            background: #667eea; 
+            color: white; 
+            border: none; 
+            padding: 12px 24px; 
+            border-radius: 5px; 
+            cursor: pointer;
+            font-size: 1rem;
+            width: 100%;
+            margin-top: 1rem;
+        }
+        .btn:hover { background: #5a6fd8; }
+        .quick-select {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin-top: 1rem;
+        }
+        .quick-btn {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+        }
+        .quick-btn:hover {
+            background: #e9ecef;
+            border-color: #667eea;
+        }
+        .nav { text-align: center; margin-top: 2rem; }
+        .nav a {
+            color: #667eea;
+            text-decoration: none;
+            margin: 0 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 Project Configuration</h1>
+            <p>Select your team and Kanban boards</p>
+        </div>
+
+        <form id="configForm">
+            <div class="form-group">
+                <label for="jiraToken">Jira API Token:</label>
+                <input type="password" id="jiraToken" placeholder="Your personal access token">
+            </div>
+
+            <div class="form-group">
+                <label for="projectKey">Project Team:</label>
+                <select id="projectKey">
+                    <option value="">Select a team...</option>
+                    <option value="OCM">OCM - Open Cluster Management</option>
+                    <option value="ROSA">ROSA - Red Hat OpenShift Service on AWS</option>
+                    <option value="HYPERSHIFT">HYPERSHIFT</option>
+                </select>
+                <div class="quick-select">
+                    <div class="quick-btn" onclick="selectProject('OCM')">OCM</div>
+                    <div class="quick-btn" onclick="selectProject('ROSA')">ROSA</div>
+                    <div class="quick-btn" onclick="selectProject('HYPERSHIFT')">HYPERSHIFT</div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="boardIds">Kanban Board IDs:</label>
+                <input type="text" id="boardIds" placeholder="1,2,3 or 1-10,15 (leave empty for all boards)">
+                <small>Enter specific board IDs separated by commas, or leave empty to use all boards</small>
+            </div>
+
+            <button type="submit" class="btn">💾 Save Configuration</button>
+        </form>
+
+        <div class="nav">
+            <a href="/dashboard">📊 Dashboard</a>
+            <a href="/health">🩺 Health Check</a>
+            <a href="/api/analytics">📈 API</a>
+        </div>
+    </div>
+
+    <script>
+        function selectProject(key) {
+            document.getElementById('projectKey').value = key;
+        }
+
+        document.getElementById('configForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const token = document.getElementById('jiraToken').value;
+            const projectKey = document.getElementById('projectKey').value;
+            const boardIds = document.getElementById('boardIds').value;
+
+            if (!token || !projectKey) {
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            try {
+                // Save selection
+                const response = await fetch('/api/selection', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        projectKey,
+                        projectName: projectKey,
+                        boardIds: boardIds ? boardIds.split(',').map(id => parseInt(id.trim())).filter(id => !isNaN(id)) : [],
+                        timestamp: new Date().toISOString()
+                    })
+                });
+
+                if (response.ok) {
+                    alert('✅ Configuration saved successfully!');
+                    window.location.href = '/dashboard';
+                } else {
+                    alert('❌ Failed to save configuration');
+                }
+            } catch (error) {
+                alert('❌ Error: ' + error.message);
+            }
+        });
+
+        // Load existing configuration
+        window.addEventListener('load', async () => {
+            try {
+                const response = await fetch('/api/selection');
+                if (response.ok) {
+                    const selection = await response.json();
+                    document.getElementById('projectKey').value = selection.projectKey;
+                    if (selection.boardIds && selection.boardIds.length > 0) {
+                        document.getElementById('boardIds').value = selection.boardIds.join(',');
+                    }
+                }
+            } catch (error) {
+                // No existing selection
+            }
+        });
+    </script>
+</body>
+</html>
